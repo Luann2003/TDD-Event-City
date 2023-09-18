@@ -29,7 +29,7 @@ Colaboração: Os testes facilitam a colaboração em equipe, pois garantem que 
 git clone https://github.com/Luann2003/TDD-Event-City.git
 
 # Navegue até o diretório do projeto
-cd dscommerce-05
+cd TDD-Event-City
 
 # Compile e execute o programa
 java main.java
