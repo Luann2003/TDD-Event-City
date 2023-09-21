@@ -40,7 +40,6 @@ public class CityService {
 			throw new DatabaseException("Integrity violation");
 		}
 	}
-	
 	@Transactional
 	public CityDTO insert(CityDTO dto) {
 		City city = new City();
@@ -48,5 +47,4 @@ public class CityService {
 		city = repository.save(city);
 		return new CityDTO(city);
 	}
-
 }

@@ -4,12 +4,19 @@ import java.time.LocalDate;
 
 import com.devsuperior.demo.entities.Event;
 
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class EventDTO {
 	
 	private Long id;
+	@NotBlank(message = "Por favor, insira um nome")
 	private String name;
+    @Future(message = "A data deve ser no futuro")
 	private LocalDate date;
 	private String url;
+	@NotNull(message = "Informe um dado valido")
 	private Long cityId;
 	
 	public EventDTO() {

@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,6 +17,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.devsuperior.demo.controllers.tests.TokenUtil;
 import com.devsuperior.demo.dto.CityDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -29,6 +31,20 @@ public class CityControllerIT {
 	
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@Autowired
+	private TokenUtil tokenUtil;
+	
+
+	private String adminUsername;
+	private String adminPassword;
+	
+	@BeforeEach
+	void setUp() throws Exception {
+		
+		adminUsername = "bob@gmail.com";
+		adminPassword = "123456";
+	}
 	
 	@Test
 	public void findAllShouldReturnAllResourcesSortedByName() throws Exception {
@@ -45,6 +61,8 @@ public class CityControllerIT {
 	
 	@Test
 	public void insertShouldInsertResource() throws Exception {
+		
+		String accessToken = tokenUtil.obtainAccessToken(mockMvc, adminUsername, adminPassword);
 
 		CityDTO dto = new CityDTO(null, "Recife");
 		String jsonBody = objectMapper.writeValueAsString(dto);
@@ -52,6 +70,7 @@ public class CityControllerIT {
 		ResultActions result =
 				mockMvc.perform(post("/cities")
 					.content(jsonBody)
+					.header("Authorization", "Bearer " + accessToken)
 					.contentType(MediaType.APPLICATION_JSON)
 					.accept(MediaType.APPLICATION_JSON));
 		
@@ -61,7 +80,7 @@ public class CityControllerIT {
 	}
 
 	@Test
-	public void deleteShouldReturnNoContentWhenIndependentId() throws Exception {		
+	public void deleteShouldReturnNoContentWhenIndependentId() throws Exception {
 		
 		Long independentId = 5L;	
 		ResultActions result =
@@ -75,7 +94,6 @@ public class CityControllerIT {
 	public void deleteShouldReturnNotFoundWhenNonExistingId() throws Exception {		
 
 		Long nonExistingId = 50L;
-		
 		ResultActions result =
 				mockMvc.perform(delete("/cities/{id}", nonExistingId));
 
@@ -86,8 +104,7 @@ public class CityControllerIT {
 	@Transactional(propagation = Propagation.SUPPORTS) 
 	public void deleteShouldReturnBadRequestWhenDependentId() throws Exception {		
 
-		Long dependentId = 1L;
-		
+		Long dependentId = 1L;	
 		ResultActions result =
 				mockMvc.perform(delete("/cities/{id}", dependentId));
 				
